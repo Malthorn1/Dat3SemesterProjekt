@@ -2,7 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.CatFactDTO;
+import dtos.OpenCageDTO;
 import utils.EMF_Creator;
 import facades.FacadeExample;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import utils.HttpUtils;
 
 //Todo Remove or change relevant parts before ACTUAL use
 @RolesAllowed("user")
-@Path("catfact")
-public class CatFactResource {
+@Path("opencage")
+public class OpenCageResource {
     Gson  gson = new Gson();
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
@@ -29,19 +29,9 @@ public class CatFactResource {
     private static final FacadeExample FACADE =  FacadeExample.getFacadeExample(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
             
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getCatFact() throws IOException {
-        
-        
-        
-        String catFact = HttpUtils.fetchData("https://cat-fact.herokuapp.com/facts/random");
-        
-        CatFactDTO cfDTO = gson.fromJson(catFact, CatFactDTO.class);
-        
-        return  gson.toJson(cfDTO);
-        
-    }
+   
+    
+    
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})

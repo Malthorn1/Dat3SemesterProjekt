@@ -8,7 +8,7 @@ package facades;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dtos.pokeDTO;
+import dtos.NASADTO;
 import entities.RenameMe;
 import java.io.IOException;
 import java.util.List;
@@ -21,20 +21,20 @@ import utils.HttpUtils;
  *
  * @author mikke
  */
-public class PokemonFacade {
+public class NASAFacade {
 
     private String PokemonByURL = "https://pokeapi.co/api/v2/pokemon/";
 
     private static EntityManagerFactory emf;
-    private static PokemonFacade instance;
+    private static NASAFacade instance;
 
-    public PokemonFacade() {
+    public NASAFacade() {
     }
 
-    public static PokemonFacade getFacadeExample(EntityManagerFactory _emf) {
+    public static NASAFacade getFacadeExample(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
-            instance = new PokemonFacade();
+            instance = new NASAFacade();
         }
         return instance;
     }
@@ -43,20 +43,5 @@ public class PokemonFacade {
         return emf.createEntityManager();
     }
 
-    public pokeDTO getPokemonById(int id) throws IOException {
-        String poke = HttpUtils.fetchData(PokemonByURL + id);
-        JsonObject jobj = new Gson().fromJson(poke, JsonObject.class);
-
-        pokeDTO pdto = new pokeDTO(jobj);
-
-        return pdto;
-    }
-
-    public Object getPokemonById(String name) throws IOException {
-        String poke = HttpUtils.fetchData(PokemonByURL + name);
-        JsonObject jobj = new Gson().fromJson(poke, JsonObject.class);
-        pokeDTO pdto = new pokeDTO(jobj);
-        return pdto;
-    }
 
 }

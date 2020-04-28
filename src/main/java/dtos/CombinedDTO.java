@@ -11,15 +11,15 @@ package dtos;
  */
 public class CombinedDTO {
     
-    private String catFact;
-    private String pokemonName;
-    private String uselessFact;
-    private String kanyeQuote;
-    public  CombinedDTO(CatFactDTO  cfDTO,  pokeDTO pDTO, UselessFactDTO ufDTO, KanyeDTO kDTO){
-        this.catFact = cfDTO.getText();
-        this.pokemonName = pDTO.getName();
-        this.uselessFact = ufDTO.getText();
-        this.kanyeQuote = kDTO.getQuote();
+    private String OpenCageDTO;
+    private String NASADTO;
+  //  private String uselessFact;
+//    private String kanyeQuote;
+    public  CombinedDTO(OpenCageDTO  cfDTO,  NASADTO pDTO  /* UselessFactDTO ufDTO, KanyeDTO kDTO */ ){
+    //    this.catFact = cfDTO.getText();
+   //     this.pokemonName = pDTO.getName();
+     //   this.uselessFact = ufDTO.getText();
+    //    this.kanyeQuote = kDTO.getQuote();
     }
     
 }

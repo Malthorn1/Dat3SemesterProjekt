@@ -2,11 +2,11 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.CatFactDTO;
+import dtos.OpenCageDTO;
 import dtos.CombinedDTO;
-import dtos.KanyeDTO;
-import dtos.UselessFactDTO;
-import dtos.pokeDTO;
+
+
+import dtos.NASADTO;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -54,13 +54,12 @@ public class asyncdemo {
         Future<String> kanyeFuture = getDataAsync("https://api.kanye.rest/");
         String kanye = kanyeFuture.get();
         
-        CatFactDTO cfDTO = GSON.fromJson(catFact, CatFactDTO.class);
-        pokeDTO pDTO = GSON.fromJson(pokemon,  pokeDTO.class);
-        UselessFactDTO  ufDTO = GSON.fromJson(uselessFact, UselessFactDTO.class);
-        KanyeDTO kDTO = GSON.fromJson(kanye, KanyeDTO.class);
+        OpenCageDTO cfDTO = GSON.fromJson(catFact, OpenCageDTO.class);
+        NASADTO pDTO = GSON.fromJson(pokemon,  NASADTO.class);
+
         
-        CombinedDTO combined  = new CombinedDTO(cfDTO, pDTO,  ufDTO, kDTO);
-        String result = GSON.toJson(combined);
+        CombinedDTO combined  = new CombinedDTO(cfDTO, pDTO);
+       String result = GSON.toJson(combined);
         ar.resume(result);
         executor.shutdown();
         

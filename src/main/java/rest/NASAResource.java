@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import utils.EMF_Creator;
 import facades.FacadeExample;
-import facades.PokemonFacade;
+import facades.NASAFacade;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
@@ -15,15 +15,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 
-@Path("pokemon")
-public class PokeResource {
+@Path("nasa")
+public class NASAResource {
         private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
                 "pu",
                 "jdbc:mysql://localhost:3307/dat3",
                 "dev",
                 "ax2",
                 EMF_Creator.Strategy.CREATE);
-    private static final PokemonFacade FACADE =  PokemonFacade.getFacadeExample(EMF);
+    private static final NASAFacade FACADE =  NASAFacade.getFacadeExample(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
             
     @GET
@@ -34,24 +34,6 @@ public class PokeResource {
 
     
 
-    @Path("/{id}")
-    @GET
-    @RolesAllowed({("admin"),("user")})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getPokemonById(@PathParam("id") int id) throws IOException {
-        return GSON.toJson(FACADE.getPokemonById(id)); 
-    }
-
-    
-    @Path("/name/{name}")
-    @GET
-    @RolesAllowed({("admin"),("user")})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getPokemonById(@PathParam("name") String name) throws IOException {
-        return GSON.toJson(FACADE.getPokemonById(name)); 
-    }
-
-    
 
     
 }
