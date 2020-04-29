@@ -5,9 +5,7 @@
  */
 package dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+
 import com.google.gson.JsonObject;
 
 /**
@@ -16,26 +14,18 @@ import com.google.gson.JsonObject;
  */
 public class OpenCageDTO {
     
-    @JsonProperty("lat")
     private String lat;
-    @JsonProperty("lng")
     private String lng;
-    @JsonProperty("country")
     private String country;
-    @JsonProperty("country_code")
-    private String countryCode;
+    private String countrycode;
     
-    public OpenCageDTO(JsonObject jObj){
+    public OpenCageDTO(JsonObject jobj){
         
-        JsonArray results = jObj.getAsJsonArray("results");
-        JsonObject result = results.get(0).getAsJsonObject();
-        JsonObject components = result.get("components").getAsJsonObject();
-        JsonObject geometry = result.get("geometry").getAsJsonObject();
+        this.country = jobj.get("components").getAsJsonObject().get("country").getAsString();
+        this.countrycode = jobj.get("components").getAsJsonObject().get("country_code").getAsString();
+        this.lat = jobj.get("geometry").getAsJsonObject().get("lat").getAsString();
+        this.lng = jobj.get("geometry").getAsJsonObject().get("lng").getAsString();
         
-        this.lat = geometry.get("lat").getAsString();
-        this.lng = geometry.get("lng").getAsString();
-        this.country = components.get("country").getAsString();
-        this.countryCode = components.get("country_code").getAsString();
     }
 
     public String getLat() {
@@ -62,19 +52,13 @@ public class OpenCageDTO {
         this.country = country;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getCountrycode() {
+        return countrycode;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCountrycode(String countrycode) {
+        this.countrycode = countrycode;
     }
-    
-    
-    
-    
-   
-    
-    
-    
+
+ 
 }

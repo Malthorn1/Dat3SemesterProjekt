@@ -3,13 +3,19 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 import dtos.OpenCageDTO;
 import utils.EMF_Creator;
 import facades.NASAFacade;
 import java.io.IOException;
+import java.io.InputStream;
+import javax.json.Json;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import utils.HttpUtils;
 import utils.Settings;
 
@@ -27,17 +33,30 @@ public class NASAResource {
             
     
     
-    @Path("info")
+    @Path("info/{q}")
     @GET
-    public String getAllInfo() throws IOException{
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getAllInfo(@PathParam("q") String q) throws IOException{
+        
+        
+        return getGeoInfo(q);
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    
+    private static String getGeoInfo(String parameter) throws IOException{
         String  key  = Settings.getPropertyValue("apikey.opencage");
-        String geoData = HttpUtils.fetchData("https://api.opencagedata.com/geocode/v1/json?q=copenhagen&key="+ key);
+        String geoData = HttpUtils.fetchData("https://api.opencagedata.com/geocode/v1/json?q="+parameter+"&key="+ key);
+        JsonObject jobj  = new Gson().fromJson(geoData, JsonObject.class);
         
         
-        OpenCageDTO ocDTO = GSON.fromJson(geoData, OpenCageDTO.class);
-        System.out.println(ocDTO);
-        
-        
+        OpenCageDTO ocDTO = new  OpenCageDTO(jobj.get("results").getAsJsonArray().get(0).getAsJsonObject());
         return  GSON.toJson(ocDTO);
         
     }
