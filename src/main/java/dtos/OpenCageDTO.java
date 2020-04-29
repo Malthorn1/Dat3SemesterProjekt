@@ -5,31 +5,37 @@
  */
 package dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  *
  * @author casper
  */
 public class OpenCageDTO {
     
-    private int id; 
-    private String lat ; 
-    private String lng; 
-    private String countryCode; 
-    private String createdAt;
-
+    @JsonProperty("lat")
+    private String lat;
+    @JsonProperty("lng")
+    private String lng;
+    @JsonProperty("country")
+    private String country;
+    @JsonProperty("country_code")
+    private String countryCode;
     
-    public OpenCageDTO(){}
-    
-    
-    
-    
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public OpenCageDTO(JsonObject jObj){
+        
+        JsonArray results = jObj.getAsJsonArray("results");
+        JsonObject result = results.get(0).getAsJsonObject();
+        JsonObject components = result.get("components").getAsJsonObject();
+        JsonObject geometry = result.get("geometry").getAsJsonObject();
+        
+        this.lat = geometry.get("lat").getAsString();
+        this.lng = geometry.get("lng").getAsString();
+        this.country = components.get("country").getAsString();
+        this.countryCode = components.get("country_code").getAsString();
     }
 
     public String getLat() {
@@ -48,6 +54,14 @@ public class OpenCageDTO {
         this.lng = lng;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getCountryCode() {
         return countryCode;
     }
@@ -55,17 +69,11 @@ public class OpenCageDTO {
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
-
     
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
     
+    
+    
+   
     
     
     
