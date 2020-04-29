@@ -34,7 +34,11 @@ public class NASAResource {
         String geoData = HttpUtils.fetchData("https://api.opencagedata.com/geocode/v1/json?q=copenhagen&key="+ key);
         
         
-        OpenCageDTO ocDTO = GSON.fromJson(geoData, OpenCageDTO.class);
+        JsonObject jobj = new Gson().fromJson(geoData, JsonObject.class);
+        OpenCageDTO ocDTO = new OpenCageDTO(jobj) ; 
+        
+        
+        
         System.out.println(ocDTO);
         
         
