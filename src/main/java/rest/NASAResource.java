@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
+import dtos.CombinedDTO;
 import dtos.CovidDTO;
 import dtos.NASADTO;
 import dtos.OpenCageDTO;
@@ -42,7 +43,11 @@ public class NASAResource {
         OpenCageDTO ocDTO = getGeoInfo(q);
         String satImg = getSatelliteImg(ocDTO.getLat(), ocDTO.getLng());
         NASADTO  nDTO = new NASADTO(satImg);
-        return GSON.toJson(nDTO);
+        ArrayList covid = getCovidInfo(ocDTO.getCountry()); 
+        
+        CombinedDTO combined = new CombinedDTO (ocDTO, covid, nDTO ); 
+        
+        return GSON.toJson(combined);
     }
     
     private static OpenCageDTO getGeoInfo(String parameter) throws IOException{

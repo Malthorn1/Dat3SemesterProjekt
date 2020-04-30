@@ -29,7 +29,6 @@ public class ApplicationConfig extends Application {
         resources.add(rest.NASAResource.class);
         resources.add(rest.OpenCageResource.class);
         resources.add(rest.RenameMeResource.class);
-        resources.add(rest.asyncdemo.class);
         resources.add(rest.populateDBResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(security.LoginEndpoint.class);

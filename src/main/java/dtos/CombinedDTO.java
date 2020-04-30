@@ -5,21 +5,23 @@
  */
 package dtos;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author casper
  */
 public class CombinedDTO {
-    
-    private String OpenCageDTO;
-    private String NASADTO;
-  //  private String uselessFact;
-//    private String kanyeQuote;
-    public  CombinedDTO(OpenCageDTO  cfDTO,  NASADTO pDTO  /* UselessFactDTO ufDTO, KanyeDTO kDTO */ ){
-    //    this.catFact = cfDTO.getText();
-   //     this.pokemonName = pDTO.getName();
-     //   this.uselessFact = ufDTO.getText();
-    //    this.kanyeQuote = kDTO.getQuote();
+
+    private OpenCageDTO OpenCageDTO;
+    private ArrayList<CovidDTO> CovidDTO;
+    private NASADTO NASADTO;
+
+    public CombinedDTO(OpenCageDTO ocDTO, ArrayList covid, NASADTO nDTO) {
+        this.OpenCageDTO = ocDTO;
+        this.CovidDTO = covid;
+        this.NASADTO = nDTO;
+
     }
-    
+
 }
