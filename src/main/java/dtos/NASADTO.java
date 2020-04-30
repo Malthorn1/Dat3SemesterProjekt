@@ -11,29 +11,25 @@ import java.util.Map;
 public class NASADTO {
     
     
-    private String date; 
-    private String picUrl; 
-    
+    private String img;
     
     public NASADTO() {}
     
+    public NASADTO(String base64){
+        this.img =  base64;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+    
     
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getPicUrl() {
-        return picUrl;
-    }
-
-    public void setPicUrl(String picUrl) {
-        this.picUrl = picUrl;
-    }
+    
 
     
     

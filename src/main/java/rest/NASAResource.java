@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import dtos.CovidDTO;
+import dtos.NASADTO;
 import dtos.OpenCageDTO;
 import utils.EMF_Creator;
 import facades.NASAFacade;
@@ -37,21 +38,31 @@ public class NASAResource {
     @Path("info/{q}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getAllInfo(@PathParam("q") String q) throws IOException {
-        return getGeoInfo(q);
+    public String getAllInfo(@PathParam("q") String q) throws IOException{
+        OpenCageDTO ocDTO = getGeoInfo(q);
+        String satImg = getSatelliteImg(ocDTO.getLat(), ocDTO.getLng());
+        NASADTO  nDTO = new NASADTO(satImg);
+        return GSON.toJson(nDTO);
+    }
+    
+    private static OpenCageDTO getGeoInfo(String parameter) throws IOException{
+        String  key  = Settings.getPropertyValue("apikey.opencage");
+        String geoData = HttpUtils.fetchData("https://api.opencagedata.com/geocode/v1/json?q="+parameter+"&key="+ key);
+        JsonObject jobj  = new Gson().fromJson(geoData, JsonObject.class);
+        
+        
+        OpenCageDTO ocDTO = new  OpenCageDTO(jobj.get("results").getAsJsonArray().get(0).getAsJsonObject());
+        return  ocDTO;
+        
+    }
+    
+    private  static String getSatelliteImg(String lat, String lng) throws IOException{
+        String key = Settings.getPropertyValue("apikey.nasa");
+        String imgData =  HttpUtils.fetchImg("https://api.nasa.gov/planetary/earth/imagery?lon="+lng+"&lat="+lat+"&dim=0.15&api_key="+key);
+        System.out.println(imgData);
+        return imgData;
     }
 
-
-
-    private static String getGeoInfo(String parameter) throws IOException {
-        String key = Settings.getPropertyValue("apikey.opencage");
-        String geoData = HttpUtils.fetchData("https://api.opencagedata.com/geocode/v1/json?q=" + parameter + "&key=" + key);
-        JsonObject jobj = new Gson().fromJson(geoData, JsonObject.class);
-
-        OpenCageDTO ocDTO = new OpenCageDTO(jobj.get("results").getAsJsonArray().get(0).getAsJsonObject());
-        return GSON.toJson(ocDTO);
-
-    }
 
     private static ArrayList getCovidInfo(String parameter) throws IOException {
         String covidInfo = HttpUtils.fetchData("https://api.covid19api.com/total/dayone/country/" + parameter);
