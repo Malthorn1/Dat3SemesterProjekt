@@ -14,12 +14,13 @@ import java.util.ArrayList;
 public class CombinedDTO {
 
     private OpenCageDTO OpenCageDTO;
-    private ArrayList<CovidDTO> CovidDTO;
+    private WeatherDTO weatherDTO;
+    
     private NASADTO NASADTO;
 
-    public CombinedDTO(OpenCageDTO ocDTO, ArrayList covid, NASADTO nDTO) {
+    public CombinedDTO(OpenCageDTO ocDTO, WeatherDTO wDTO, NASADTO nDTO) {
         this.OpenCageDTO = ocDTO;
-        this.CovidDTO = covid;
+        this.weatherDTO = wDTO;
         this.NASADTO = nDTO;
 
     }

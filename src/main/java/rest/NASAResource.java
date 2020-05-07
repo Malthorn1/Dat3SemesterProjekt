@@ -8,13 +8,13 @@ import dtos.CombinedDTO;
 import dtos.CovidDTO;
 import dtos.NASADTO;
 import dtos.OpenCageDTO;
+import dtos.WeatherDTO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,14 +37,19 @@ public class NASAResource {
         OpenCageDTO ocDTO = getGeoInfo(q);
         
         Future<String> satFuture = getSatelliteImg(ocDTO.getLat(), ocDTO.getLng());
-        Future<ArrayList> covidFuture = getCovidInfo(ocDTO.getCountry());
+        Future<JsonObject> weatherFuture = getWeatherData(ocDTO.getLat(), ocDTO.getLng());
+        
+        
         
         String satImg = satFuture.get();
-        ArrayList covid = covidFuture.get();
+        JsonObject weatherData = weatherFuture.get();
         
         NASADTO nDTO = new NASADTO(satImg);
+        
+        WeatherDTO wDTO = new WeatherDTO(weatherData);
+        
 
-        CombinedDTO combined = new CombinedDTO(ocDTO, covid, nDTO);
+        CombinedDTO combined = new CombinedDTO(ocDTO, wDTO, nDTO);
 
         return GSON.toJson(combined);
     }
@@ -78,6 +83,19 @@ public class NASAResource {
             }
             return covidData;
 
+        });
+        
+    }
+    
+    private static Future<JsonObject> getWeatherData(String lat, String lng){
+        String key = Settings.getPropertyValue("apikey.openweather");
+        return executor.submit(()-> {
+            
+           String data =  HttpUtils.fetchData("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lng+"&appid="+key);
+           JsonObject json = GSON.fromJson(data, JsonObject.class);
+            System.out.println(json);
+           return json;
+           
         });
         
     }
