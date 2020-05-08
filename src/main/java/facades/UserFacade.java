@@ -44,6 +44,17 @@ public class UserFacade {
         return user;
     }
     
+    public void registerUser(User user){
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+        
+    }
  
     public String populateDB () {
     EntityManager em = emf.createEntityManager();
