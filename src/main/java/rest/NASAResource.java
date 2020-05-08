@@ -10,11 +10,15 @@ import dtos.NASADTO;
 import dtos.OpenCageDTO;
 import dtos.WeatherDTO;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -35,21 +39,21 @@ public class NASAResource {
     public String getAllInfo(@PathParam("q") String q) throws IOException, InterruptedException, ExecutionException {
 
         OpenCageDTO ocDTO = getGeoInfo(q);
-        
+
         Future<String> satFuture = getSatelliteImg(ocDTO.getLat(), ocDTO.getLng());
         Future<JsonObject> weatherFuture = getWeatherData(ocDTO.getLat(), ocDTO.getLng());
-        
-        
-        
+        Future<ArrayList> covidFuture = getCovidInfo(ocDTO.getCountry());
+
         String satImg = satFuture.get();
         JsonObject weatherData = weatherFuture.get();
-        
-        NASADTO nDTO = new NASADTO(satImg);
-        
-        WeatherDTO wDTO = new WeatherDTO(weatherData);
-        
 
-        CombinedDTO combined = new CombinedDTO(ocDTO, wDTO, nDTO);
+        ArrayList covid = covidFuture.get();
+
+        NASADTO nDTO = new NASADTO(satImg);
+
+        WeatherDTO wDTO = new WeatherDTO(weatherData);
+
+        CombinedDTO combined = new CombinedDTO(ocDTO, wDTO, covid, nDTO);
 
         return GSON.toJson(combined);
     }
@@ -74,30 +78,39 @@ public class NASAResource {
 
     private static Future<ArrayList> getCovidInfo(String parameter) throws IOException {
         return executor.submit(() -> {
-            String covidInfo = HttpUtils.fetchData("https://api.covid19api.com/total/dayone/country/" + parameter);
-            JsonArray jobj = new Gson().fromJson(covidInfo, JsonArray.class);
+            URL url = new URL("https://api.covid19api.com/total/dayone/country/" + parameter);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Accept", "application/json;charset=UTF-8");
+            String jsonStr = "";
+            try (Scanner scan = new Scanner(con.getInputStream())) {
+                while (scan.hasNext()) {
+                    jsonStr += scan.nextLine();
+                }
+            }
+
+            JsonArray jobj = new Gson().fromJson(jsonStr, JsonArray.class);
             ArrayList covidData = new ArrayList();
             for (int i = 0; i < jobj.size(); i++) {
                 CovidDTO cDTO = new CovidDTO(jobj.get(i).getAsJsonObject());
                 covidData.add(cDTO);
             }
+
             return covidData;
+        });
+    }
+
+    private static Future<JsonObject> getWeatherData(String lat, String lng) {
+        String key = Settings.getPropertyValue("apikey.openweather");
+        return executor.submit(() -> {
+
+            String data = HttpUtils.fetchData("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lng + "&appid=" + key);
+            JsonObject json = GSON.fromJson(data, JsonObject.class);
+            System.out.println(json);
+            return json;
 
         });
-        
-    }
-    
-    private static Future<JsonObject> getWeatherData(String lat, String lng){
-        String key = Settings.getPropertyValue("apikey.openweather");
-        return executor.submit(()-> {
-            
-           String data =  HttpUtils.fetchData("https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lng+"&appid="+key);
-           JsonObject json = GSON.fromJson(data, JsonObject.class);
-            System.out.println(json);
-           return json;
-           
-        });
-        
+
     }
 
 }
