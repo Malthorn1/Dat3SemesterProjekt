@@ -104,7 +104,7 @@ public class NASAResource {
         String key = Settings.getPropertyValue("apikey.openweather");
         return executor.submit(() -> {
 
-            String data = HttpUtils.fetchData("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lng + "&appid=" + key);
+            String data = HttpUtils.fetchData("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lng + "&appid=" + key+"&units=metric");
             JsonObject json = GSON.fromJson(data, JsonObject.class);
             System.out.println(json);
             return json;
