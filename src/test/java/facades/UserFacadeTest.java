@@ -1,12 +1,18 @@
 package facades;
 
+import dtos.SearchHistoryDTOs;
 import utils.EMF_Creator;
 import entities.RenameMe;
+import entities.SearchHistory;
+import entities.User;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -16,24 +22,24 @@ import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
 
 //Uncomment the line below, to temporarily disable this test
-@Disabled
-public class FacadeExampleTest {
+//@Disabled
+public class UserFacadeTest {
 
     private static EntityManagerFactory emf;
-    private static FacadeExample facade;
-
-    public FacadeExampleTest() {
+    private static UserFacade facade;
+    private static User user = new User("user", "test123");
+    public UserFacadeTest() {
     }
 
     //@BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactory(
                 "pu",
-                "jdbc:mysql://localhost:3307/startcode_test",
+                "jdbc:mysql://localhost:3307/dat3_test",
                 "dev",
                 "ax2",
                 EMF_Creator.Strategy.CREATE);
-        facade = FacadeExample.getFacadeExample(emf);
+        facade = UserFacade.getUserFacade(emf);
     }
 
     /*   **** HINT **** 
@@ -45,7 +51,7 @@ public class FacadeExampleTest {
     @BeforeAll
     public static void setUpClassV2() {
        emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST,Strategy.DROP_AND_CREATE);
-       facade = FacadeExample.getFacadeExample(emf);
+       facade = UserFacade.getUserFacade(emf);
     }
 
     @AfterAll
@@ -60,9 +66,21 @@ public class FacadeExampleTest {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("RenameMe.deleteAllRows").executeUpdate();
-            em.persist(new RenameMe("Some txt", "More text"));
-            em.persist(new RenameMe("aaa", "bbb"));
+            em.createNamedQuery("SearchHistory.deleteAllRows").executeUpdate();
+            em.createNamedQuery("User.deleteAllRows").executeUpdate();
+            
+            
+            
+            
+            em.persist(user);
+            
+            SearchHistory searchHistory = new SearchHistory("this is a test", new java.util.Date(), user);
+            //user.addSearchHistory(searchHistory);
+            em.persist(searchHistory);
+            
+           
+            
+            
 
             em.getTransaction().commit();
         } finally {
@@ -75,10 +93,23 @@ public class FacadeExampleTest {
 //        Remove any data after each test was run
     }
 
-    // TODO: Delete or change this method 
     @Test
-    public void testAFacadeMethod() {
-        assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
+    public void testGetSearchHistory(){
+        
+        SearchHistoryDTOs searchHistory = facade.getSearchHistory("user");
+        assertFalse(searchHistory.getAllSearches().isEmpty());
+        
+    }
+    @Test
+    public void testAddSearchHistory(){
+        String search = "this is a test 2";
+        facade.addSearchToHistory(search, user.getUserName());
+        SearchHistoryDTOs searchHistory = facade.getSearchHistory("user");
+
+        assertEquals(2, searchHistory.getAllSearches().size());
+        assertEquals(user.getUserName(), searchHistory.getAllSearches().get(0).getUser());
+        
+        
     }
 
 }

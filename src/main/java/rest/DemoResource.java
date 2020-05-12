@@ -1,7 +1,12 @@
 package rest;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import dtos.SearchHistoryDTO;
+import dtos.SearchHistoryDTOs;
+import entities.SearchHistory;
 import entities.User;
+import facades.UserFacade;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
@@ -22,6 +27,8 @@ import utils.EMF_Creator;
 public class DemoResource {
 
     private static EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
+    private static UserFacade USERFACADE = UserFacade.getUserFacade(EMF);
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Context
     private UriInfo context;
@@ -56,7 +63,9 @@ public class DemoResource {
     @RolesAllowed("user")
     public String getFromUser() {
         String thisuser = securityContext.getUserPrincipal().getName();
-        return "{\"msg\": \"Hello to User: " + thisuser + "\"}";
+        SearchHistoryDTOs sDTOs = USERFACADE.getSearchHistory(thisuser);
+        
+        return GSON.toJson(sDTOs, SearchHistoryDTOs.class);
     }
 
     @GET

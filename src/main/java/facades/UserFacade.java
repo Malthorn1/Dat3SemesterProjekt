@@ -1,11 +1,14 @@
 package facades;
 
+import dtos.SearchHistoryDTOs;
 import entities.Role;
+import entities.SearchHistory;
 import entities.User;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import errorhandling.AuthenticationException;
-import utils.EMF_Creator;
+import java.util.List;
+import javax.persistence.TypedQuery;
 
 /**
  * @author lam@cphbusiness.dk
@@ -42,6 +45,36 @@ public class UserFacade {
             em.close();
         }
         return user;
+    }
+    
+    public SearchHistoryDTOs getSearchHistory(String username){
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            TypedQuery<SearchHistory> tq = em.createQuery("SELECT s FROM SearchHistory s where s.user.userName like :username ", SearchHistory.class);
+            tq.setParameter("username", username);
+            return new SearchHistoryDTOs(tq.getResultList());
+            
+        }finally{
+            em.close();
+        }
+    }
+    
+    public void addSearchToHistory(String search, String userName){
+        EntityManager em = emf.createEntityManager();
+        try{
+            User user = em.find(User.class, userName);
+            SearchHistory searchHistory = new SearchHistory(search, new java.util.Date(), user);
+            em.getTransaction().begin();
+            em.persist(searchHistory);
+            user.addSearchHistory(searchHistory);
+            em.merge(user);
+            em.getTransaction().commit();
+            
+        }finally{
+            em.close();
+        }
+        
     }
     
     public void registerUser(User user){
